@@ -16,7 +16,6 @@ const state = {};
 const controlSearch = async () => {
   // Grab query from view
   const query = searchView.getInput();
-  console.log(query);
 
   if (query) {
     // New search object and add to state
@@ -26,13 +25,19 @@ const controlSearch = async () => {
     searchView.clearInput();
     searchView.clearResults();
     renderLoader(elements.searchRes);
-    // Search for recupes
+    try {
+      // Search for recupes
 
-    await state.search.getResults();
+      await state.search.getResults();
 
-    //Render results on UI
-    clearLoader();
-    searchView.renderResults(state.search.result);
+      //Render results on UI
+      clearLoader();
+      searchView.renderResults(state.search.result);
+    } catch (error) {
+      alert('Something went wrong');
+      console.log(error);
+      clearLoader();
+    }
   }
 };
 
@@ -54,4 +59,33 @@ elements.searchResPages.addEventListener('click', e => {
 Recipe Controller
 */
 
-const r = new Recipe(47746);
+const controlRecipe = async () => {
+  // Grab the ID from the url
+  const id = window.location.hash.replace('#', '');
+  console.log(id);
+
+  if (id) {
+    // Changes to UI
+
+    state.recipe = new Recipe(id);
+
+    try {
+      //Get Recipe data
+      await state.recipe.getRecipe();
+      state.recipe.parseIngredients();
+
+      state.recipe.calcTime();
+      state.recipe.calcServing();
+
+      //render recipe
+      console.log(state.recipe);
+    } catch (error) {
+      console.log(error);
+      alert('Error, Processing recipe');
+    }
+  }
+};
+
+['hashchange', 'load'].forEach(event =>
+  window.addEventListener(event, controlRecipe)
+);
