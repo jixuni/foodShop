@@ -52,6 +52,7 @@ export default class Recipe {
       'cup',
       'pound'
     ];
+
     const units = [...unitsShort, 'kg', 'g'];
 
     const newIngredients = this.ingredients.map(el => {
